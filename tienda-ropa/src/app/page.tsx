@@ -1,69 +1,94 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Hero } from "@/components/home/hero";
+import { Marquee } from "@/components/home/marquee";
+import { Lookbook } from "@/components/home/lookbook";
+import { EditorialCard } from "@/components/editorial-card";
+import { ProductCard } from "@/components/product-card";
+import { SiteFooter } from "@/components/site-footer";
+import { Reveal } from "@/components/reveal";
+import { products } from "@/lib/products";
 
-export default function Home() {
+export default function HomePage() {
+  const season = products.slice(0, 4);
+  const featured = products.slice(4, 8);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <Hero />
+      <Marquee />
+
+      {/* Temporada */}
+      <section id="temporada" className="scroll-mt-20">
+        <div className="px-4 pb-10 pt-16 text-center sm:px-6 sm:pt-24">
+          <Reveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-ink/45">
+              Colección
+            </p>
+            <h2 className="mt-3 font-serif text-5xl italic tracking-tight text-ink sm:text-7xl">
+              Temporada
+            </h2>
+          </Reveal>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid grid-cols-2 lg:grid-cols-4">
+          {season.map((product, i) => (
+            <Reveal key={product.id} delay={i * 0.08} y={30}>
+              <EditorialCard product={product} />
+            </Reveal>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <Lookbook />
+
+      {/* Lo más vendido */}
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <Reveal>
+          <div className="flex items-end justify-between">
+            <h2 className="font-serif text-4xl italic tracking-tight text-ink sm:text-5xl">
+              Lo más vendido
+            </h2>
+            <Link
+              href="/productos"
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/60 transition-colors hover:text-ink"
+            >
+              Ver todo
+            </Link>
+          </div>
+        </Reveal>
+        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+          {featured.map((product, i) => (
+            <Reveal key={product.id} delay={i * 0.06} y={30}>
+              <ProductCard product={product} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Cotiza CTA */}
+      <section className="px-4 pb-20 sm:px-6 lg:px-8">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-20 text-center sm:py-28">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/50">
+              Personalización
+            </p>
+            <h2 className="mt-4 font-serif text-4xl italic tracking-tight text-white sm:text-6xl">
+              Tu diseño, nuestra prenda
+            </h2>
+            <p className="mx-auto mt-5 max-w-lg text-sm text-white/70">
+              Serigrafía, DTF y vinil sobre prendas premium. Cotiza tu proyecto
+              en minutos y llévalo a la calle.
+            </p>
+            <Link
+              href="/cotiza"
+              className="mt-9 inline-flex rounded-full bg-white px-9 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-ink transition-transform hover:scale-[1.03]"
+            >
+              Cotiza ahora
+            </Link>
+          </div>
+        </Reveal>
+      </section>
+
+      <SiteFooter />
+    </main>
   );
 }

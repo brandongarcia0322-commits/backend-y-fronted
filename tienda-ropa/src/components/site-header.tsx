@@ -1,66 +1,67 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
   useScroll,
   useTransform,
-} from 'motion/react'
-import { Menu, Search, User, ShoppingBag } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useCart } from '@/components/cart-provider'
-import { NavDrawer } from '@/components/nav-drawer'
-import { CartDrawer } from '@/components/cart-drawer'
-import { SearchOverlay } from '@/components/search-overlay'
-import { AccountMenu } from '@/components/account-menu'
+} from "motion/react";
+import { Menu, Search, User, ShoppingBag } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useCart } from "@/components/cart-provider";
+import { NavDrawer } from "@/components/nav-drawer";
+import { CartDrawer } from "@/components/cart-drawer";
+import { SearchOverlay } from "@/components/search-overlay";
+import { AccountMenu } from "@/components/account-menu";
 
 export function SiteHeader() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { count, openCart } = useCart()
-  const { scrollY } = useScroll()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { count, openCart } = useCart();
+  const { scrollY } = useScroll();
 
-  const [scrolled, setScrolled] = useState(false)
-  const [navOpen, setNavOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [accountOpen, setAccountOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
-  const logoScale = useTransform(scrollY, [0, 140], [1.18, 0.82])
+  // Escala del texto superior al hacer scroll
+  const logoScale = useTransform(scrollY, [40, 140], [1.05, 0.85]);
 
-  useMotionValueEvent(scrollY, 'change', (v) => {
-    setScrolled(v > 40)
-  })
+  useMotionValueEvent(scrollY, "change", (v) => {
+    setScrolled(v > 60);
+  });
 
-  // Close overlays whenever the route changes (premium re-render flow).
+  // Cerrar menús desplegables en cambios de ruta
   useEffect(() => {
-    setNavOpen(false)
-    setSearchOpen(false)
-    setAccountOpen(false)
-  }, [pathname])
+    setNavOpen(false);
+    setSearchOpen(false);
+    setAccountOpen(false);
+  }, [pathname]);
 
   const iconBtn = cn(
-    'relative flex size-10 items-center justify-center rounded-full transition-all duration-500',
+    "relative flex size-10 items-center justify-center rounded-full transition-all duration-500",
     scrolled
-      ? 'border border-ink/10 bg-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur'
-      : 'border border-transparent bg-transparent',
-  )
+      ? "border border-ink/10 bg-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur"
+      : "border border-transparent bg-transparent",
+  );
 
   return (
     <>
       <motion.header
         initial={false}
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-all duration-500',
+          "fixed inset-x-0 top-0 z-50 transition-all duration-500",
           scrolled
-            ? 'border-b border-ink/5 bg-white/80 backdrop-blur-xl'
-            : 'border-b border-transparent bg-white/40 backdrop-blur-md',
+            ? "border-b border-ink/5 bg-white/80 backdrop-blur-xl"
+            : "border-b border-transparent bg-white/0 backdrop-blur-none",
         )}
       >
         <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Left cluster */}
+          {/* Lado izquierdo: Solo botón de Menú */}
           <div className="flex items-center gap-1 sm:gap-2">
             <button
               type="button"
@@ -70,28 +71,24 @@ export function SiteHeader() {
             >
               <Menu className="size-5" />
             </button>
-            <Link
-              href="/cotiza"
-              className="hidden rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-ink/80 transition-colors hover:text-ink sm:inline-flex"
-            >
-              Cotiza
-            </Link>
-            <Link
-              href="/#temporada"
-              className="hidden rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-ink/80 transition-colors hover:text-ink sm:inline-flex"
-            >
-              Temporada
-            </Link>
           </div>
 
-          {/* Center logo */}
+          {/* Centro: El texto "Textiles Reyes" solo aparece cuando se hace scroll */}
           <motion.div
             style={{ scale: logoScale }}
-            className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+            animate={{
+              opacity: scrolled ? 1 : 0,
+              y: scrolled ? 0 : -10,
+            }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className={cn(
+              "absolute left-1/2 -translate-x-1/2 text-center leading-[0.95]",
+              !scrolled && "pointer-events-none",
+            )}
           >
             <Link
               href="/"
-              className="pointer-events-auto block text-center leading-[0.95]"
+              className="block text-center leading-[0.95]"
               aria-label="Textiles Reyes — Inicio"
             >
               <span className="block font-serif text-base italic tracking-tight text-ink sm:text-lg">
@@ -103,7 +100,7 @@ export function SiteHeader() {
             </Link>
           </motion.div>
 
-          {/* Right cluster */}
+          {/* Lado derecho: Búsqueda, Cuenta y Carrito */}
           <div className="flex items-center gap-1 sm:gap-2">
             <button
               type="button"
@@ -145,10 +142,10 @@ export function SiteHeader() {
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
         onSelect={(id) => {
-          setSearchOpen(false)
-          router.push(`/productos/${id}`)
+          setSearchOpen(false);
+          router.push(`/productos/${id}`);
         }}
       />
     </>
-  )
+  );
 }

@@ -1,48 +1,54 @@
 'use client'
 
+import type { Product } from '@/lib/products'
+import Image from 'next/image'
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useCart } from '@/components/cart-provider'
-import { ImagePlaceholder } from '@/components/image-placeholder'
-import { formatMXN, type Product } from '@/lib/products'
+import { motion } from 'framer-motion'
 
-export function ProductCard({ product }: { product: Product }) {
-  const { toggleFavorite, isFavorite } = useCart()
-  const fav = isFavorite(product.id)
+interface ProductCardProps {
+  product: Product
+}
 
+
+export function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = (product as any).image || (product as any).images?.[0] || '/placeholder.svg'
   return (
-    <Link
-      href={`/productos/${product.id}`}
-      className="group relative flex flex-col"
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-2xl hover:border-black/20"
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-sand">
-        <div className="h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]">
-          <ImagePlaceholder label={product.name} />
-        </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            toggleFavorite(product.id)
-          }}
-          aria-label={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-          className="absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full bg-white/85 backdrop-blur transition-transform hover:scale-110"
-        >
-          <Heart
-            className={cn(
-              'size-4 transition-colors',
-              fav ? 'fill-ink text-ink' : 'text-ink/60',
-            )}
+      <Link href={`/productos/${product.id}`} className="block">
+        {/* Contenedor de Imagen con Zoom de Realce */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100">
+          <Image
+           src={imageUrl}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            unoptimized
           />
-        </button>
-      </div>
-      <div className="pt-3">
-        <h3 className="text-xs font-medium uppercase tracking-[0.14em] text-ink">
-          {product.name}
-        </h3>
-        <p className="mt-1 text-sm text-ink/70">{formatMXN(product.price)}</p>
-      </div>
-    </Link>
+          {/* Degradado y botón de acción flotante en hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+              Ver detalle <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Información del producto */}
+        <div className="p-4 flex flex-col space-y-1">
+          <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-semibold">
+            {product.category || 'TEXTILES REYES'}
+          </span>
+          <h3 className="font-display text-base md:text-lg uppercase tracking-wider text-ink line-clamp-1 group-hover:text-black transition-colors">
+            {product.name}
+          </h3>
+          <p className="font-bold text-sm text-neutral-900 pt-1">
+            ${product.price} <span className="text-[10px] text-neutral-400 font-normal">MXN</span>
+          </p>
+        </div>
+      </Link>
+    </motion.div>
   )
 }

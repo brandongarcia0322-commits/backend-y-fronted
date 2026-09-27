@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-display), sans-serif;
+  --font-playfair: var(--font-display), sans-serif; /* <-- Esta es la que le da la orden al menú */
+  --font-display: var(--font-display), sans-serif;
+}
 @theme inline {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -179,11 +185,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .font-serif {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
-  }
+  
+  /* Fuerza a que tanto font-serif como font-playfair usen Brigends Expanded */
+  .font-serif,
+  .font-playfair,
   .font-street {
-    font-family: var(--font-street), var(--font-sans), sans-serif;
+    font-family: var(--font-display), sans-serif;
   }
 }
 

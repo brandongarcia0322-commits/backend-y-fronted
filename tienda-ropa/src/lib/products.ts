@@ -198,3 +198,10 @@ export function getProduct(id: string) {
 export function formatMXN(value: number) {
   return `$${value.toLocaleString('es-MX')} MXN`
 }
+// En src/lib/products.ts
+export const carouselImages = [
+  '/logo.png', // puedes poner la ruta de tus fotos en /public
+  '/placeholder.svg',
+  '/placeholder.svg',
+  '/placeholder.svg',
+]

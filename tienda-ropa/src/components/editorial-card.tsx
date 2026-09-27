@@ -14,26 +14,30 @@ export function EditorialCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/productos/${product.id}`}
-      className="group relative block aspect-[3/4] overflow-hidden bg-sand"
+      /* EFECTO DE REALCE: Elevación (-translate-y-3), bordes redondeados (rounded-2xl) y sombra profunda al hover */
+      className="group relative block aspect-[3/4] overflow-hidden rounded-2xl bg-sand border border-black/5 transition-all duration-500 ease-out hover:-translate-y-3 hover:shadow-2xl hover:border-black/20"
     >
-      <div className="h-full w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105">
+      {/* Zoom suave a la imagen en Hover */}
+      <div className="h-full w-full transition-transform duration-700 ease-out group-hover:scale-110">
         <ImagePlaceholder label={product.name} />
       </div>
 
-      {/* Hover reveal */}
-      <div className="absolute inset-x-0 bottom-0 translate-y-4 bg-gradient-to-t from-black/75 via-black/25 to-transparent p-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+      {/* Degradado e información con elevación en hover */}
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-5 transition-all duration-300">
         <div className="flex items-end justify-between gap-3">
           <div className="text-white">
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/70">
               {product.category}
             </p>
-            <p className="mt-1 font-serif text-xl italic leading-tight">
+            <p className="mt-1 font-serif text-xl italic leading-tight group-hover:translate-x-1 transition-transform duration-300">
               {product.name}
             </p>
-            <p className="mt-1 text-sm text-white/80">
+            <p className="mt-1 text-sm text-white/90 font-medium">
               {formatMXN(product.price)}
             </p>
           </div>
+
+          {/* Botón Flotante para Agregar al Carrito */}
           <button
             type="button"
             aria-label={`Agregar ${product.name} al carrito`}
@@ -43,12 +47,12 @@ export function EditorialCard({ product }: { product: Product }) {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                color: product.colors[0].name,
+                color: product.colors?.[0]?.name || 'Gris',
                 size: 'M',
                 qty: 1,
               })
             }}
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-ink transition-transform hover:scale-110"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-ink transition-transform duration-300 hover:scale-110 shadow-md hover:shadow-lg"
           >
             <Plus className="size-5" />
           </button>

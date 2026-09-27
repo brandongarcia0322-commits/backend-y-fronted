@@ -39,7 +39,7 @@ export default function HomePage() {
               href="/productos"
               className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/60 transition-colors hover:text-ink"
             >
-              Ver todo
+               todo
             </Link>
           </div>
         </Reveal>

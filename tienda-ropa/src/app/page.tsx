@@ -10,7 +10,7 @@ import { ProductCard } from '@/components/product-card'
 import { SiteFooter } from '@/components/site-footer'
 import { Reveal } from '@/components/reveal'
 import { products } from '@/lib/products'
-
+import FeaturedShowcase from '@/components/featured-showcase' // <--- AGREGAR AQUÍ
 export default function HomePage() {
   const season = products.slice(0, 4)
   const featured = products.slice(4, 8)
@@ -38,20 +38,22 @@ export default function HomePage() {
       <div className="relative z-10 bg-[#f5f5f0] min-h-screen rounded-t-[32px] md:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.7)] pt-6">
         
         {/* Cuadrícula de Productos de Temporada */}
-        <section id="temporada" className="w-full">
-          <div className="grid grid-cols-2 lg:grid-cols-4">
-            {season.map((product, i) => (
-              <Reveal key={product.id} delay={i * 0.08} y={30}>
-                <EditorialCard product={product} />
-              </Reveal>
-            ))}
-          </div>
-        </section>
+      {/* Sección Temporada */}
+<section id="temporada" className="w-full px-4 md:px-8">
+  {/* Modifica esta línea para controlar las columnas según la pantalla */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    {season.map((product, i) => (
+      <Reveal key={product.id} delay={i * 0.08} y={30}>
+        <EditorialCard product={product} />
+      </Reveal>
+    ))}
+  </div>
+</section>
 
         <Lookbook />
 
         {/* Lo más vendido */}
-        <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <section className="bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <Reveal>
             <div className="flex items-end justify-between">
               <h2 className="font-serif text-4xl italic tracking-tight text-ink sm:text-5xl">

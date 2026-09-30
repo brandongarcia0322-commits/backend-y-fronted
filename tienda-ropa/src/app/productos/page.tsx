@@ -1,42 +1,47 @@
-import type { Metadata } from 'next'
+import FeaturedShowcase from '@/components/featured-showcase'
 import { ProductCard } from '@/components/product-card'
-import { SiteFooter } from '@/components/site-footer'
-import { Reveal } from '@/components/reveal'
 import { products } from '@/lib/products'
 
-export const metadata: Metadata = {
-  title: 'Productos — Textiles Reyes',
-  description: 'Catálogo completo de prendas premium Textiles Reyes.',
-}
-
 export default function ProductosPage() {
-  return (
-    <main className="pt-16">
-      <section className="px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
-        <Reveal>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink/45">
-            Catálogo
-          </p>
-          <h1 className="mt-3 font-serif text-5xl italic tracking-tight text-ink sm:text-7xl">
-            Productos
-          </h1>
-          <p className="mx-auto mt-4 max-w-md text-sm text-ink/55">
-            {products.length} prendas premium listas para personalizar.
-          </p>
-        </Reveal>
-      </section>
+  // 8 productos arriba = 2 filas completas de 4 columnas
+  const topProducts = products.slice(0, 8)
+  const remainingProducts = products.slice(8)
 
-      <section className="px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((product, i) => (
-            <Reveal key={product.id} delay={(i % 4) * 0.06} y={30}>
-              <ProductCard product={product} />
-            </Reveal>
+  return (
+    <main className="min-h-screen bg-white py-12 overflow-x-hidden">
+      {/* Encabezado */}
+      <div className="text-center mb-10 px-4">
+        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-neutral-400 block mb-1">
+          CATÁLOGO
+        </span>
+        <h1 className="font-display text-4xl sm:text-5xl font-black uppercase tracking-tight text-black">
+          PRODUCTOS
+        </h1>
+        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mt-2">
+          {products.length} prendas premium listas para personalizar.
+        </p>
+      </div>
+
+      {/* 1. PRIMERAS 2 FILAS (8 PRODUCTOS) */}
+      <div className="px-4 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {topProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
-      </section>
+      </div>
 
-      <SiteFooter />
+      {/* 2. SHOWCASE DE 3 CUADROS CON DESPLAZAMIENTO */}
+      <FeaturedShowcase />
+
+      {/* 3. RESTO DE PRODUCTOS */}
+      <div className="px-4 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {remainingProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
     </main>
   )
 }

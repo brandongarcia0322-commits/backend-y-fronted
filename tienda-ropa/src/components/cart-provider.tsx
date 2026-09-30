@@ -16,6 +16,7 @@ export type CartItem = {
   color: string
   size: string
   qty: number
+  image?: string
 }
 
 type AddPayload = Omit<CartItem, 'key'>
@@ -39,7 +40,7 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null)
 
 function makeKey(item: AddPayload) {
-  return `${item.id}__${item.color}__${item.size}`
+  return `${item.id}_${item.color}_${item.size}`
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -51,15 +52,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = useCallback(() => setIsOpen(false), [])
 
   const addItem = useCallback((payload: AddPayload) => {
-    const key = makeKey(payload)
+    // Sanitización para asegurar que nunca haya valores undefined o NaN
+    const safePayload: AddPayload = {
+      id: String(payload.id || 'item'),
+      name: payload.name || 'Producto',
+      price: Number(payload.price) || 0,
+      color: payload.color || 'Único',
+      size: payload.size || 'Única',
+      qty: Math.max(1, Number(payload.qty) || 1),
+      image: payload.image || '/placeholder.svg',
+    }
+
+    const key = makeKey(safePayload)
+
     setItems((prev) => {
       const existing = prev.find((i) => i.key === key)
       if (existing) {
         return prev.map((i) =>
-          i.key === key ? { ...i, qty: i.qty + payload.qty } : i,
+          i.key === key
+            ? { ...i, qty: (Number(i.qty) || 0) + safePayload.qty }
+            : i
         )
       }
-      return [...prev, { ...payload, key }]
+      return [...prev, { ...safePayload, key }]
     })
     setIsOpen(true)
   }, [])
@@ -69,10 +84,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const updateQty = useCallback((key: string, qty: number) => {
+    const safeQty = Number(qty)
+    if (isNaN(safeQty) || safeQty <= 0) {
+      setItems((prev) => prev.filter((i) => i.key !== key))
+      return
+    }
     setItems((prev) =>
-      prev
-        .map((i) => (i.key === key ? { ...i, qty: Math.max(0, qty) } : i))
-        .filter((i) => i.qty > 0),
+      prev.map((i) => (i.key === key ? { ...i, qty: safeQty } : i))
     )
   }, [])
 
@@ -80,22 +98,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const toggleFavorite = useCallback((id: string) => {
     setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
     )
   }, [])
 
   const isFavorite = useCallback(
     (id: string) => favorites.includes(id),
-    [favorites],
+    [favorites]
   )
 
   const count = useMemo(
-    () => items.reduce((sum, i) => sum + i.qty, 0),
-    [items],
+    () => items.reduce((sum, i) => sum + (Number(i.qty) || 0), 0),
+    [items]
   )
+
   const subtotal = useMemo(
-    () => items.reduce((sum, i) => sum + i.qty * i.price, 0),
-    [items],
+    () =>
+      items.reduce(
+        (sum, i) =>
+          sum + (Number(i.qty) || 0) * (Number(i.price) || 0),
+        0
+      ),
+    [items]
   )
 
   const value: CartContextValue = {
@@ -114,7 +138,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isFavorite,
   }
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  )
 }
 
 export function useCart() {

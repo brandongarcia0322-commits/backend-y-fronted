@@ -18,15 +18,19 @@ import { SearchOverlay } from "@/components/search-overlay";
 import { AccountMenu } from "@/components/account-menu";
 
 export function SiteHeader() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { count, openCart } = useCart();
-  const { scrollY } = useScroll();
+ const pathname = usePathname();
+ const router = useRouter();
+const { count, openCart } = useCart();
+const { scrollY } = useScroll();
 
   const [scrolled, setScrolled] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+
+const isHome = pathname === '/';
+// Si NO es la portada O si ya hizo scroll, el header debe ser visible/sólido
+const isSolid = !isHome || scrolled;
 
   // Escala del texto superior al hacer scroll
   const logoScale = useTransform(scrollY, [40, 140], [1.05, 0.85]);
@@ -41,13 +45,13 @@ export function SiteHeader() {
     setSearchOpen(false);
     setAccountOpen(false);
   }, [pathname]);
-
-  const iconBtn = cn(
-    "relative flex size-10 items-center justify-center rounded-full transition-all duration-500",
-    scrolled
-      ? "border border-ink/10 bg-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur"
-      : "border border-transparent bg-transparent",
-  );
+  
+const iconBtn = cn(
+  "relative flex size-10 items-center justify-center rounded-full transition-all duration-500",
+  isSolid
+    ? "border border-ink/10 bg-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur text-black"
+    : "border border-transparent bg-transparent text-white"
+);;
 
   return (
     <>
@@ -55,7 +59,7 @@ export function SiteHeader() {
         initial={false}
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-          scrolled
+          isSolid
             ? "border-b border-ink/5 bg-white/80 backdrop-blur-xl"
             : "border-b border-transparent bg-white/0 backdrop-blur-none",
         )}
@@ -77,13 +81,13 @@ export function SiteHeader() {
           <motion.div
             style={{ scale: logoScale }}
             animate={{
-              opacity: scrolled ? 1 : 0,
-              y: scrolled ? 0 : -10,
+              opacity: isSolid ? 1 : 0,
+              y: isSolid ? 0 : -10,
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={cn(
               "absolute left-1/2 -translate-x-1/2 text-center leading-[0.95]",
-              !scrolled && "pointer-events-none",
+              !isSolid && "pointer-events-none",
             )}
           >
             <Link

@@ -1,245 +1,197 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, ShoppingBag, Heart } from 'lucide-react'
+import { ShoppingBag, ZoomIn, Plus, Minus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/components/cart-provider'
-import { ImagePlaceholder } from '@/components/image-placeholder'
-import { formatMXN, type Product } from '@/lib/products'
+import type { Product } from '@/lib/products'
 
-export function ProductDetail({ product }: { product: Product }) {
-  const router = useRouter()
-  const { addItem, openCart, toggleFavorite, isFavorite } = useCart()
+interface ProductDetailProps {
+  product: Product
+}
 
-  const [size, setSize] = useState<string | null>(null)
-  const [qty, setQty] = useState(1)
-  const [color, setColor] = useState(product.colors[0])
-  const [activeSlot, setActiveSlot] = useState(0)
-  const [pinnedSpec, setPinnedSpec] = useState<number | null>(null)
-  const [hoverSpec, setHoverSpec] = useState<number | null>(null)
-  const [error, setError] = useState(false)
+export default function ProductDetail({ product }: ProductDetailProps) {
+  const images = (product as any)?.images?.length > 0 
+    ? (product as any).images 
+: [(product as any)?.image || '/placeholder.svg']
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [selectedSize, setSelectedSize] = useState('M')
+  const [selectedColor, setSelectedColor] = useState('Blanco')
+  const [quantity, setQuantity] = useState(1)
+  const { addItem } = useCart()
 
-  const fav = isFavorite(product.id)
-  const highlight = hoverSpec ?? pinnedSpec
-
-  function handleAdd(goCheckout = false) {
-    if (!size) {
-      setError(true)
-      return
-    }
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      color: color.name,
-      size,
-      qty,
-    })
-    if (goCheckout) {
-      router.push('/checkout')
-    } else {
-      openCart()
-    }
-  }
+  const specs = (product as any)?.specs || [
+    'ALGODÓN PEINADO 180 G/M² PREMIUM',
+    'CORTE LOOSE FIT CONTEMPORÁNEO',
+    'SERIGRAFÍA DE ALTA DENSIDAD',
+    'COSTURAS REFORZADAS DOBLE AGUJA',
+    'ETIQUETA TEJIDA TEXTILES REYES',
+    'PREENCOGIDO, NO DESTIÑE'
+  ]
 
   return (
-    <div className="grid gap-0 lg:grid-cols-[1fr_1.1fr_1fr]">
-      {/* Left: specs */}
-      <div className="order-2 px-6 py-12 lg:order-1 lg:py-20">
-        <Link
-          href="/productos"
-          className="inline-flex items-center gap-2 text-sm text-ink/60 transition-colors hover:text-ink"
-        >
-          <ArrowLeft className="size-4" />
-          Regresar
-        </Link>
-
-        <h1 className="mt-8 font-serif text-5xl italic leading-[0.95] tracking-tight text-ink">
-          {product.name}
-        </h1>
-
-        <p className="mt-2 text-xs uppercase tracking-[0.24em] text-ink/45">
-          {product.category}
-        </p>
-
-        <h2 className="mt-12 text-sm font-semibold uppercase tracking-[0.2em] text-ink">
-          Especificaciones
-        </h2>
-        <ol className="mt-5 space-y-1">
-          {product.specs.map((spec, i) => (
-            <li key={i}>
-              <button
-                type="button"
-                onMouseEnter={() => setHoverSpec(i)}
-                onMouseLeave={() => setHoverSpec(null)}
-                onClick={() =>
-                  setPinnedSpec((prev) => (prev === i ? null : i))
-                }
-                className={cn(
-                  'flex w-full items-baseline gap-3 rounded-md px-2 py-2 text-left text-sm transition-all duration-300',
-                  highlight === i
-                    ? 'bg-ink text-white'
-                    : 'text-ink/60 hover:text-ink',
-                )}
-              >
-                <span className="tabular-nums opacity-50">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                {spec}
-              </button>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-5 px-2 text-[11px] uppercase tracking-[0.16em] text-ink/35">
-          Pasa el cursor para resaltar · haz clic para fijar
-        </p>
-      </div>
-
-      {/* Center: gallery */}
-      <div className="order-1 flex flex-col gap-3 bg-sand p-3 lg:order-2 lg:sticky lg:top-16 lg:h-[calc(100svh-4rem)]">
-        <div className="relative flex-1 overflow-hidden rounded-xl">
-          <ImagePlaceholder
-            tone="dark"
-            label={`${product.name} · vista ${activeSlot + 1}`}
-          />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-street text-7xl text-white/10">
-            {activeSlot + 1}
-          </span>
-        </div>
-        <div className="flex gap-3">
-          {Array.from({ length: product.slots }).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setActiveSlot(i)}
-              aria-label={`Ver imagen ${i + 1}`}
-              className={cn(
-                'h-20 flex-1 overflow-hidden rounded-lg ring-offset-2 transition-all',
-                activeSlot === i ? 'ring-2 ring-ink' : 'opacity-70',
-              )}
+    <div className="min-h-screen bg-white text-black py-6 pl-4 sm:pl-8 lg:pl-12 pr-6 lg:pr-16 font-sans">
+      <div className="w-full">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[85vh]">
+          
+          {/* 1. COLUMNA IZQUIERDA */}
+          <div className="lg:col-span-4 space-y-6 lg:pt-20">
+            <Link
+              href="/productos"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 hover:text-black transition-colors"
             >
-              <ImagePlaceholder hint={false} />
-            </button>
-          ))}
-        </div>
-      </div>
+              &lt; Back
+            </Link>
 
-      {/* Right: purchase */}
-      <div className="order-3 px-6 py-12 lg:py-20">
-        <div className="flex items-start justify-between">
-          <p className="font-serif text-4xl tracking-tight text-ink">
-            {formatMXN(product.price)}
-          </p>
-          <button
-            type="button"
-            onClick={() => toggleFavorite(product.id)}
-            aria-label="Favorito"
-            className="flex size-10 items-center justify-center rounded-full border border-ink/12 transition-colors hover:bg-sand"
-          >
-            <Heart
-              className={cn('size-4', fav ? 'fill-ink text-ink' : 'text-ink/60')}
-            />
-          </button>
-        </div>
+            <div>
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-black leading-tight">
+                {product?.name || 'PLAYERA GRÁFICA LOOSE FIT'}
+              </h1>
+              <p className="text-xs font-bold uppercase tracking-wider text-black mt-2">
+                ENVÍO GRATIS A TODO MÉXICO
+              </p>
+            </div>
 
-        {/* Sizes */}
-        <div className="mt-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Talla</p>
-          <div className="mt-3 flex gap-2">
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  setSize(s)
-                  setError(false)
-                }}
-                className={cn(
-                  'flex h-12 min-w-12 items-center justify-center rounded-lg border px-4 text-sm font-medium transition-all',
-                  size === s
-                    ? 'border-ink bg-ink text-white'
-                    : 'border-ink/15 text-ink hover:border-ink',
-                )}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-          {error && (
-            <p className="mt-2 text-xs text-red-600">
-              Selecciona una talla para continuar.
+            <ul className="space-y-2 text-xs font-bold text-neutral-800 uppercase tracking-tight leading-relaxed">
+              {specs.map((spec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="select-none">•</span>
+                  <span>{spec}</span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 pt-2">
+              {product?.name || 'TEXTILES REYES'}, EDICIÓN LIMITADA.
             </p>
-          )}
-        </div>
-
-        {/* Cantidad */}
-        <div className="mt-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-ink/50">
-            Cantidad
-          </p>
-          <div className="mt-3 flex w-fit items-center rounded-lg border border-ink/15">
-            <button
-              type="button"
-              aria-label="Restar"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="flex size-11 items-center justify-center text-lg text-ink/70 hover:text-ink"
-            >
-              −
-            </button>
-            <span className="w-10 text-center text-sm tabular-nums">{qty}</span>
-            <button
-              type="button"
-              aria-label="Sumar"
-              onClick={() => setQty((q) => Math.min(99, q + 1))}
-              className="flex size-11 items-center justify-center text-lg text-ink/70 hover:text-ink"
-            >
-              +
-            </button>
           </div>
-        </div>
 
-        {/* Color */}
-        <div className="mt-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Color</p>
-          <div className="mt-3 flex gap-3">
-            {product.colors.map((c) => (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => setColor(c)}
-                aria-label={c.name}
-                title={c.name}
-                className={cn(
-                  'size-9 rounded-full border transition-all',
-                  color.name === c.name
-                    ? 'ring-2 ring-ink ring-offset-2'
-                    : 'border-ink/15',
-                )}
-                style={{ backgroundColor: c.hex }}
+          {/* 2. COLUMNA CENTRAL (IMAGEN) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center">
+            <div className="relative w-full h-[1350px] max-w-[1200px] bg-neutral-100 rounded-2xl overflow-hidden flex items-center justify-center border border-neutral-200/60">
+              <Image
+src={images[selectedImage] || (product as any)?.image || '/placeholder.svg'}                alt={product?.name || 'Product'}
+                fill
+                className="object-contain p-6"
+                priority
+                unoptimized
               />
-            ))}
+              <button className="absolute bottom-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all">
+                <ZoomIn className="w-5 h-5 text-black" />
+              </button>
+            </div>
           </div>
-          <p className="mt-2 text-xs text-ink/50">{color.name}</p>
-        </div>
 
-        {/* Actions */}
-        <button
-          type="button"
-          onClick={() => handleAdd(false)}
-          className="mt-9 flex w-full items-center justify-center gap-2 rounded-full bg-ink py-4 text-xs font-semibold uppercase tracking-[0.24em] text-white transition-all hover:bg-ink/90"
-        >
-          <ShoppingBag className="size-4" />
-          Agregar al carrito
-        </button>
-        <button
-          type="button"
-          onClick={() => handleAdd(true)}
-          className="mt-3 w-full text-center text-xs font-semibold uppercase tracking-[0.24em] text-ink/60 transition-colors hover:text-ink"
-        >
-          Ir a realizar compra
-        </button>
+          {/* 3. COLUMNA DERECHA */}
+          <div className="lg:col-span-3 space-y-6 bg-white p-6 sm:p-8 rounded-3xl border border-black/10 shadow-xl lg:sticky lg:top-8">
+            
+            {/* PRECIO */}
+            <div className="flex items-baseline justify-between border-b border-black/10 pb-5">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">
+                PRECIO
+              </span>
+              <div className="text-right">
+                <span className="font-sans text-3xl sm:text-4xl font-extrabold text-black tracking-tight">
+                  ${product?.price ?? 1290}
+                </span>
+                <span className="text-xs font-bold text-neutral-500 ml-1.5">MXN</span>
+              </div>
+            </div>
+
+            {/* TALLA */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-xs font-bold uppercase tracking-[0.2em]">
+                <span className="text-black">TALLA</span>
+                <span className="text-neutral-500 font-mono">{selectedSize}</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {['S', 'M', 'G', 'XL'].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={cn(
+                      "h-11 rounded-xl font-bold text-xs uppercase border transition-all flex items-center justify-center",
+                      selectedSize === size
+                        ? "bg-black text-white border-black shadow-md scale-105"
+                        : "bg-neutral-50 text-black border-black/10 hover:border-black/30"
+                    )}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* CANTIDAD */}
+            <div className="space-y-3">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-black block">
+                CANTIDAD
+              </span>
+              <div className="flex items-center justify-between border border-black/15 rounded-2xl p-1.5 bg-neutral-50">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-neutral-200 transition-colors"
+                >
+                  <Minus className="w-3.5 h-3.5 text-black" />
+                </button>
+                <span className="font-bold text-base font-mono">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-neutral-200 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5 text-black" />
+                </button>
+              </div>
+            </div>
+
+            {/* COLOR */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-xs font-bold uppercase tracking-[0.2em]">
+                <span className="text-black">COLOR</span>
+                <span className="text-neutral-500 font-medium">{selectedColor.toUpperCase()}</span>
+              </div>
+              <div className="flex gap-3">
+                {[
+                  { name: 'Blanco', class: 'bg-white border-black/20' },
+                  { name: 'Negro', class: 'bg-black border-black' },
+                  { name: 'Azul', class: 'bg-blue-900 border-blue-900' },
+                ].map((color) => (
+                  <button
+                    key={color.name}
+                    onClick={() => setSelectedColor(color.name)}
+                    className={cn(
+                      "w-9 h-9 rounded-full border-2 transition-transform relative flex items-center justify-center",
+                      color.class,
+                      selectedColor === color.name ? "scale-110 ring-2 ring-black ring-offset-2" : "opacity-80 hover:opacity-100"
+                    )}
+                  >
+                    {selectedColor === color.name && (
+                      <Check className={cn("w-4 h-4", color.name === 'Blanco' ? 'text-black' : 'text-white')} />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* BOTÓN PRINCIPAL */}
+            <button
+              onClick={() => addItem && addItem(product, quantity)}
+              className="w-full py-4 rounded-2xl bg-black text-white font-bold text-xs uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all flex items-center justify-center gap-2.5 shadow-lg active:scale-[0.98] mt-2"
+            >
+              <ShoppingBag className="w-4 h-4" /> AGREGAR AL CARRITO
+            </button>
+
+            {/* ENLACE SECUNDARIO */}
+            <button className="w-full text-center text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 hover:text-black transition-colors pt-1">
+              IR A REALIZAR COMPRA
+            </button>
+
+          </div>
+
+        </div>
       </div>
     </div>
   )

@@ -19,8 +19,7 @@ export function EditorialCard({ product }: EditorialCardProps) {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-neutral-900 border border-black/10 shadow-sm"
-    >
+className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-white"    >
       <Link href={`/productos/${product.id}`} className="block h-full w-full">
         {/* Imagen principal con efecto de Zoom */}
         <Image

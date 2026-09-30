@@ -14,19 +14,16 @@ const links = [
     href: '/productos',
     label: 'Productos',
     desc: 'Catálogo completo',
-    Icon: Shirt,
   },
   {
     href: '/#temporada',
     label: 'Temporada',
     desc: 'Serigrafía en tendencia',
-    Icon: Sparkles,
   },
   {
     href: '/cotiza',
     label: 'Cotiza',
     desc: 'Personaliza tu diseño',
-    Icon: FileText,
   },
 ]
 
@@ -71,8 +68,7 @@ export function NavDrawer({ open, onClose }: Props) {
             </div>
 
             <div className="mt-10 flex flex-col">
-              {links.map(({ href, label, desc, Icon }, i) => (
-                <motion.div
+{links.map(({ href, label, desc }, i) => (                <motion.div
                   key={href}
                   initial={{ opacity: 0, x: -24 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -87,9 +83,7 @@ export function NavDrawer({ open, onClose }: Props) {
                     onClick={onClose}
                     className="group flex items-center gap-4 border-b border-ink/8 py-5 transition-colors"
                   >
-                    <span className="flex size-11 items-center justify-center rounded-full border border-ink/10 bg-sand text-ink transition-all duration-500 group-hover:bg-ink group-hover:text-white">
-                      <Icon className="size-4" />
-                    </span>
+                   
                     <span className="flex-1">
                       <span className="block font-serif text-2xl tracking-tight text-ink">
                         {label}

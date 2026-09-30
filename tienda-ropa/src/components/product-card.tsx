@@ -16,11 +16,11 @@ export function ProductCard({ product }: ProductCardProps) {
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-2xl hover:border-black/20"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white transition-all duration-500"
     >
       <Link href={`/productos/${product.id}`} className="block">
         {/* Contenedor de Imagen con Zoom de Realce */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100">
+       <div className="relative aspect-[3/4] w-full overflow-hidden bg-white">
           <Image
            src={imageUrl}
             alt={product.name}

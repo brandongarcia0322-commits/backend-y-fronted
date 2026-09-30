@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingBag, ZoomIn, Plus, Minus, Check } from 'lucide-react'
+import { ShoppingBag, Plus, Minus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/components/cart-provider'
 import type { Product } from '@/lib/products'
+import ProductVerticalShowcase from '@/components/product-vertical-showcase'
 
 interface ProductDetailProps {
   product: Product
@@ -15,8 +15,8 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
   const images = (product as any)?.images?.length > 0 
     ? (product as any).images 
-: [(product as any)?.image || '/placeholder.svg']
-  const [selectedImage, setSelectedImage] = useState(0)
+    : [(product as any)?.image || '/placeholder.svg']
+
   const [selectedSize, setSelectedSize] = useState('M')
   const [selectedColor, setSelectedColor] = useState('Blanco')
   const [quantity, setQuantity] = useState(1)
@@ -69,20 +69,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </p>
           </div>
 
-          {/* 2. COLUMNA CENTRAL (IMAGEN) */}
+          {/* 2. COLUMNA CENTRAL (MOSTRADOR VERTICAL ÚNICO) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center">
-            <div className="relative w-full h-[1350px] max-w-[1200px] bg-neutral-100 rounded-2xl overflow-hidden flex items-center justify-center border border-neutral-200/60">
-              <Image
-src={images[selectedImage] || (product as any)?.image || '/placeholder.svg'}                alt={product?.name || 'Product'}
-                fill
-                className="object-contain p-6"
-                priority
-                unoptimized
-              />
-              <button className="absolute bottom-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all">
-                <ZoomIn className="w-5 h-5 text-black" />
-              </button>
-            </div>
+            <ProductVerticalShowcase 
+              images={images && images.length > 0 ? images : [(product as any)?.image || '/placeholder.svg']} 
+            />
           </div>
 
           {/* 3. COLUMNA DERECHA */}
@@ -178,7 +169,7 @@ src={images[selectedImage] || (product as any)?.image || '/placeholder.svg'}    
 
             {/* BOTÓN PRINCIPAL */}
             <button
-              onClick={() => addItem && addItem(product, quantity)}
+              onClick={() => addItem && addItem({ ...product, quantity } as any)}
               className="w-full py-4 rounded-2xl bg-black text-white font-bold text-xs uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all flex items-center justify-center gap-2.5 shadow-lg active:scale-[0.98] mt-2"
             >
               <ShoppingBag className="w-4 h-4" /> AGREGAR AL CARRITO

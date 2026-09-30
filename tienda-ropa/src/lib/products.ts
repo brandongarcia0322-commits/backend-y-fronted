@@ -8,6 +8,7 @@ export type Product = {
   specs: string[]
   /** number of gallery slots on the detail view */
   slots: number
+  image?: string; 
 }
 
 const COLORS = {
@@ -38,6 +39,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg', //
   },
   {
     id: 'playera-grafica',
@@ -200,8 +202,8 @@ export function formatMXN(value: number) {
 }
 // En src/lib/products.ts
 export const carouselImages = [
-  '/logo.png', // puedes poner la ruta de tus fotos en /public
-  '/placeholder.svg',
-  '/placeholder.svg',
-  '/placeholder.svg',
+  '/c1.jpg', // Foto 1
+  '/c2.jpg',           // Foto 2
+  '/c3.jpg',           // Foto 3
+  '/c4.jpg',           // Foto 4
 ]

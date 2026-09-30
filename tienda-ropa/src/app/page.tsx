@@ -25,7 +25,7 @@ export default function HomePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.35])
 
   return (
-    <main ref={containerRef} className="relative w-full bg-black">
+    <main ref={containerRef} className="relative w-full bg-white">
       
       {/* CAPA 1: HERO FIJO CON EFECTO PROFUNDIDAD */}
       <div className="sticky top-0 h-screen w-full overflow-hidden z-0">
@@ -35,8 +35,7 @@ export default function HomePage() {
       </div>
 
       {/* CAPA 2: TELÓN BEIGE QUE SUBE Y CUBRE AL HERO */}
-      <div className="relative z-10 bg-[#f5f5f0] min-h-screen rounded-t-[32px] md:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.7)] pt-6">
-        
+<div className="relative z-10 bg-white min-h-screen rounded-t-[32px] md:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.7)] pt-6">        
         {/* Cuadrícula de Productos de Temporada */}
       {/* Sección Temporada */}
 <section id="temporada" className="w-full px-4 md:px-8">

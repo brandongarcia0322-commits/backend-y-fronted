@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion } from 'motion/react'
 import { createClient } from '@/lib/supabase/client'
 import { 
   User, 
@@ -16,7 +16,9 @@ import {
   CheckCircle2, 
   AlertCircle,
   ShoppingBag,
-  Clock
+  CreditCard,
+  Plus,
+  Trash2
 } from 'lucide-react'
 
 interface Address {
@@ -46,11 +48,21 @@ interface Order {
   order_items: OrderItem[]
 }
 
+interface PaymentMethod {
+  id: string
+  card_holder: string
+  brand: string
+  last4: string
+  exp_month: string
+  exp_year: string
+  is_default: boolean
+}
+
 export default function CuentaPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [activeTab, setActiveTab] = useState<'perfil' | 'direccion' | 'pedidos'>('perfil')
+  const [activeTab, setActiveTab] = useState<'perfil' | 'direccion' | 'pedidos' | 'tarjetas'>('perfil')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
@@ -75,6 +87,16 @@ export default function CuentaPage() {
 
   // Historial de pedidos
   const [orders, setOrders] = useState<Order[]>([])
+
+  // Métodos de pago
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  const [showAddCard, setShowAddCard] = useState(false)
+  const [newCard, setNewCard] = useState({
+    card_holder: '',
+    card_number: '',
+    exp_month: '',
+    exp_year: ''
+  })
 
   useEffect(() => {
     async function loadAccountData() {
@@ -130,6 +152,17 @@ export default function CuentaPage() {
 
         if (ordersData) {
           setOrders(ordersData as Order[])
+        }
+
+        // 4. Cargar Tarjetas
+        const { data: cardsData } = await supabase
+          .from('payment_methods')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+
+        if (cardsData) {
+          setPaymentMethods(cardsData as PaymentMethod[])
         }
 
       } catch (err) {
@@ -190,6 +223,73 @@ export default function CuentaPage() {
     }
   }
 
+  // Detectar marca de tarjeta según el primer dígito
+  const detectBrand = (number: string) => {
+    const clean = number.replace(/\s+/g, '')
+    if (clean.startsWith('4')) return 'Visa'
+    if (/^5[1-5]/.test(clean) || /^2[2-7]/.test(clean)) return 'Mastercard'
+    if (/^3[47]/.test(clean)) return 'AMEX'
+    return 'Visa'
+  }
+
+  // Guardar Tarjeta Nueva
+  const handleAddCard = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setSuccess(null)
+    setError(null)
+
+    const cleanNum = newCard.card_number.replace(/\s+/g, '')
+    if (cleanNum.length < 13) {
+      setError('Por favor ingresa un número de tarjeta válido.')
+      setSaving(false)
+      return
+    }
+
+    const last4 = cleanNum.slice(-4)
+    const brand = detectBrand(cleanNum)
+
+    try {
+      const { data, error } = await supabase
+        .from('payment_methods')
+        .insert({
+          user_id: userId,
+          card_holder: newCard.card_holder.trim().toUpperCase(),
+          brand: brand,
+          last4: last4,
+          exp_month: newCard.exp_month,
+          exp_year: newCard.exp_year,
+          is_default: paymentMethods.length === 0
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      setPaymentMethods([data as PaymentMethod, ...paymentMethods])
+      setNewCard({ card_holder: '', card_number: '', exp_month: '', exp_year: '' })
+      setShowAddCard(false)
+      setSuccess('Tarjeta guardada exitosamente.')
+    } catch (err: any) {
+      setError(err.message || 'Error al guardar la tarjeta.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Eliminar Tarjeta
+  const handleDeleteCard = async (id: string) => {
+    try {
+      const { error } = await supabase.from('payment_methods').delete().eq('id', id)
+      if (error) throw error
+
+      setPaymentMethods(paymentMethods.filter((card) => card.id !== id))
+      setSuccess('Tarjeta eliminada correctamente.')
+    } catch (err: any) {
+      setError(err.message || 'Error al eliminar la tarjeta.')
+    }
+  }
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/')
@@ -213,7 +313,7 @@ export default function CuentaPage() {
           <div>
             <h1 className="font-serif text-3xl sm:text-4xl italic text-black font-bold">Mi Cuenta</h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-500">
-              Gestiona tus datos personales, direcciones de envío y compras.
+              Gestiona tus datos personales, direcciones de envío, tarjetas y compras.
             </p>
           </div>
 
@@ -250,6 +350,18 @@ export default function CuentaPage() {
           >
             <MapPin className="size-4" />
             Dirección de Envío
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('tarjetas'); setSuccess(null); setError(null); }}
+            className={`flex items-center gap-2 pb-3 px-2 text-xs font-bold uppercase tracking-wider transition-all border-b-2 whitespace-nowrap ${
+              activeTab === 'tarjetas'
+                ? 'border-black text-black'
+                : 'border-transparent text-neutral-400 hover:text-black'
+            }`}
+          >
+            <CreditCard className="size-4" />
+            Métodos de Pago ({paymentMethods.length})
           </button>
 
           <button
@@ -474,7 +586,160 @@ export default function CuentaPage() {
             </motion.form>
           )}
 
-          {/* 3. HISTORIAL DE COMPRAS */}
+          {/* 3. MÉTODOS DE PAGO / TARJETAS */}
+          {activeTab === 'tarjetas' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+              
+              <div className="flex justify-between items-center">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  Tarjetas Almacenadas
+                </h3>
+                <button
+                  onClick={() => setShowAddCard(!showAddCard)}
+                  className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white transition-all hover:bg-neutral-800"
+                >
+                  <Plus className="size-4" />
+                  {showAddCard ? 'Cancelar' : 'Agregar Tarjeta'}
+                </button>
+              </div>
+
+              {/* FORMULARIO AGREGAR TARJETA */}
+              {showAddCard && (
+                <motion.form
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  onSubmit={handleAddCard}
+                  className="bg-neutral-50/80 rounded-2xl p-6 sm:p-8 space-y-5 border border-neutral-200/80"
+                >
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-black">
+                    Nueva Tarjeta
+                  </h4>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                      Nombre del Titular
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="COMO APARECE EN LA TARJETA"
+                      value={newCard.card_holder}
+                      onChange={(e) => setNewCard({ ...newCard, card_holder: e.target.value })}
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-black outline-none border border-neutral-200 focus:ring-2 focus:ring-black/10 transition-all uppercase"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                      Número de Tarjeta
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={19}
+                      placeholder="4500 0000 0000 0000"
+                      value={newCard.card_number}
+                      onChange={(e) => setNewCard({ ...newCard, card_number: e.target.value })}
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-black outline-none border border-neutral-200 focus:ring-2 focus:ring-black/10 transition-all font-mono"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                        Mes Expiración
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={2}
+                        placeholder="MM (ej. 08)"
+                        value={newCard.exp_month}
+                        onChange={(e) => setNewCard({ ...newCard, exp_month: e.target.value })}
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-black outline-none border border-neutral-200 focus:ring-2 focus:ring-black/10 transition-all font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                        Año Expiración
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={2}
+                        placeholder="AA (ej. 28)"
+                        value={newCard.exp_year}
+                        onChange={(e) => setNewCard({ ...newCard, exp_year: e.target.value })}
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-black outline-none border border-neutral-200 focus:ring-2 focus:ring-black/10 transition-all font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="flex items-center gap-2 rounded-full bg-black px-8 py-3 text-xs font-bold uppercase tracking-widest text-white transition-all hover:bg-neutral-800 disabled:opacity-50"
+                    >
+                      {saving ? <Loader2 className="size-4 animate-spin" /> : <><Save className="size-4" /> Guardar Tarjeta</>}
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+
+              {/* LISTA DE TARJETAS */}
+              {paymentMethods.length === 0 ? (
+                <div className="text-center py-16 bg-neutral-50/80 rounded-2xl border border-neutral-100 p-8">
+                  <CreditCard className="size-12 mx-auto text-neutral-300 mb-4" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-black">Sin tarjetas guardadas</h3>
+                  <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
+                    Agrega una tarjeta para agilizar tus futuras compras.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {paymentMethods.map((card) => (
+                    <div
+                      key={card.id}
+                      className="relative bg-gradient-to-br from-neutral-900 to-black text-white p-6 rounded-2xl shadow-lg flex flex-col justify-between h-48 border border-neutral-800"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">
+                          {card.brand}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteCard(card.id)}
+                          className="text-neutral-500 hover:text-red-400 transition-colors p-1"
+                          title="Eliminar tarjeta"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+
+                      <div className="font-mono text-lg tracking-widest text-neutral-200">
+                        •••• •••• •••• {card.last4}
+                      </div>
+
+                      <div className="flex justify-between items-end text-xs uppercase tracking-wider">
+                        <div>
+                          <p className="text-[9px] text-neutral-400">Titular</p>
+                          <p className="font-semibold truncate max-w-[160px]">{card.card_holder}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] text-neutral-400">Expira</p>
+                          <p className="font-mono font-semibold">{card.exp_month}/{card.exp_year}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </motion.div>
+          )}
+
+          {/* 4. HISTORIAL DE COMPRAS */}
           {activeTab === 'pedidos' && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               {orders.length === 0 ? (

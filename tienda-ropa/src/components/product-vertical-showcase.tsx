@@ -82,8 +82,7 @@ export default function ProductVerticalShowcase({
                 - transform-gpu: acelera el renderizado usando la tarjeta gráfica del móvil.
                 - w-[92%] / h-[92%]: la tarjeta ocupa casi todo el espacio físico disponible.
               */
-              className="absolute w-[92%] sm:w-[88%] h-[92%] rounded-3xl overflow-hidden bg-neutral-100 shadow-md sm:shadow-2xl cursor-grab active:cursor-grabbing border border-neutral-200/60 origin-center touch-none transform-gpu"
-            >
+className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[120%] rounded-3xl overflow-hidden bg-white cursor-grab active:cursor-grabbing"            >
               <div className="w-full h-full relative">
                 <Image
                   src={imgSrc}
@@ -91,7 +90,7 @@ export default function ProductVerticalShowcase({
                   fill
                   priority={isCenter}
                   sizes="(max-width: 640px) 90vw, 600px"
-                  className="object-cover pointer-events-none"
+                  className="object-contain pointer-events-none"
                   unoptimized
                 />
               </div>

@@ -84,7 +84,11 @@ export function SearchOverlay({ open, onClose, onSelect }: Props) {
                         className="group flex w-full items-center gap-4 rounded-xl px-2 py-3 text-left transition-colors hover:bg-sand"
                       >
                         <div className="size-14 shrink-0 overflow-hidden rounded-lg">
-                          <ImagePlaceholder hint={false} />
+                          <img
+  src={p.image || '/t1.jpg'}
+  alt={p.name}
+  className="h-full w-full object-cover object-center"
+/>
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-ink">{p.name}</p>

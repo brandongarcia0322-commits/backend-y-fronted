@@ -8,7 +8,7 @@ export type Product = {
   specs: string[]
   /** number of gallery slots on the detail view */
   slots: number
-  image?: string; 
+  image?: string
 }
 
 const COLORS = {
@@ -39,7 +39,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
-    image: '/t1.jpg', //
+    image: '/t1.jpg',
   },
   {
     id: 'playera-grafica',
@@ -50,6 +50,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg', // Reemplaza por la foto de esta prenda cuando la tengas en public/
   },
   {
     id: 'pantalon-cargo',
@@ -60,6 +61,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'playera-oversized',
@@ -70,6 +72,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'hoodie-print',
@@ -80,6 +83,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/ve1.jpg',
   },
   {
     id: 'bomber-reyes',
@@ -90,6 +94,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'raglan-tee',
@@ -100,6 +105,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'short-cargo',
@@ -110,6 +116,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'jogger-print',
@@ -120,6 +127,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'crewneck-reyes',
@@ -130,6 +138,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'tank-oversized',
@@ -140,6 +149,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'denim-shirt',
@@ -150,6 +160,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'polo-knit',
@@ -160,6 +171,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'windbreaker',
@@ -170,6 +182,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'boxy-tee',
@@ -180,6 +193,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
   {
     id: 'chino-relaxed',
@@ -190,6 +204,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'G', 'XL'],
     specs: baseSpecs,
     slots: 3,
+    image: '/t1.jpg',
   },
 ]
 
@@ -200,10 +215,10 @@ export function getProduct(id: string) {
 export function formatMXN(value: number) {
   return `$${value.toLocaleString('es-MX')} MXN`
 }
-// En src/lib/products.ts
+
 export const carouselImages = [
-  '/c1.jpg', // Foto 1
-  '/c2.jpg',           // Foto 2
-  '/c3.jpg',           // Foto 3
-  '/c4.jpg',           // Foto 4
+  '/c1.jpg',
+  '/c2.jpg',
+  '/c3.jpg',
+  '/c4.jpg',
 ]

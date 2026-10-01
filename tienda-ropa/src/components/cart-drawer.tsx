@@ -73,7 +73,11 @@ export function CartDrawer() {
                         className="flex gap-4 py-5"
                       >
                         <div className="size-20 shrink-0 overflow-hidden rounded-lg">
-                          <ImagePlaceholder hint={false} />
+                         <img
+  src={(item as any).image || '/t1.jpg'}
+  alt={item.name}
+  className="h-full w-full object-cover object-center"
+/>
                         </div>
                         <div className="flex flex-1 flex-col">
                           <div className="flex items-start justify-between gap-2">

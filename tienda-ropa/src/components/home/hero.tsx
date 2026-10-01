@@ -1,13 +1,27 @@
 'use client'
 
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 
 export function Hero() {
+  const { scrollY } = useScroll()
+
+  // 1. Reduce el logo de tamaño 100% a 25% al bajar
+  const logoScale = useTransform(scrollY, [0, 300], [1, 0.25])
+  
+  // 2. Eleva el logo hacia el centro de la barra superior
+  const logoY = useTransform(scrollY, [0, 300], [0, -220])
+  
+  // 3. Desvanece el logo grande justo al llegar arriba para entregar el relevo al header
+  const logoOpacity = useTransform(scrollY, [220, 300], [1, 0])
+  
+  // 4. Ocualta la flecha de scroll rápidamente
+  const arrowOpacity = useTransform(scrollY, [0, 100], [1, 0])
+
   return (
     <section className="relative h-screen w-full overflow-hidden flex flex-col justify-between bg-black">
-      {/* 1. IMAGEN DE FONDO */}
+      {/* IMAGEN DE FONDO */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/hero-bg.png"
@@ -17,17 +31,18 @@ export function Hero() {
           quality={90}
           className="object-cover object-center"
         />
-        {/* Capa oscura para dar legibilidad al logo */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
       </div>
 
-      {/* 2. CONTENIDO CENTRAL (LOGO) */}
+      {/* LOGO CON ANIMACIÓN DE SCROLL */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={{ duration: 1.1, ease: 'easeOut', delay: 0.2 }}
-          className="relative flex items-center justify-center"
+          style={{
+            scale: logoScale,
+            y: logoY,
+            opacity: logoOpacity,
+          }}
+          className="relative flex items-center justify-center origin-center"
         >
           <Image
             src="/logo.png"
@@ -41,12 +56,10 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* 3. INDICADOR DE SCROLL */}
+      {/* INDICADOR DE SCROLL */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 z-10"
+        style={{ opacity: arrowOpacity }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 z-10 pointer-events-none"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}

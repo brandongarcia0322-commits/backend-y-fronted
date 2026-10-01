@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,6 +19,13 @@ import { SearchOverlay } from "@/components/search-overlay";
 import { AccountMenu } from "@/components/account-menu";
 
 export function SiteHeader() {
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+  if (pathname === '/') {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
  const pathname = usePathname();
  const router = useRouter();
 const { count, openCart } = useCart();
@@ -36,7 +44,7 @@ const isSolid = !isHome || scrolled;
   const logoScale = useTransform(scrollY, [40, 140], [1.05, 0.85]);
 
   useMotionValueEvent(scrollY, "change", (v) => {
-    setScrolled(v > 60);
+    setScrolled(v > 260);
   });
 
   // Cerrar menús desplegables en cambios de ruta
@@ -78,31 +86,33 @@ const iconBtn = cn(
           </div>
 
           {/* Centro: El texto "Textiles Reyes" solo aparece cuando se hace scroll */}
-          <motion.div
-            style={{ scale: logoScale }}
-            animate={{
-              opacity: isSolid ? 1 : 0,
-              y: isSolid ? 0 : -10,
-            }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className={cn(
-              "absolute left-1/2 -translate-x-1/2 text-center leading-[0.95]",
-              !isSolid && "pointer-events-none",
-            )}
-          >
-            <Link
-              href="/"
-              className="block text-center leading-[0.95]"
-              aria-label="Textiles Reyes — Inicio"
-            >
-              <span className="block font-serif text-base italic tracking-tight text-ink sm:text-lg">
-                Textiles
-              </span>
-              <span className="block font-serif text-base italic tracking-tight text-ink sm:text-lg">
-                Reyes
-              </span>
-            </Link>
-          </motion.div>
+         <motion.div
+  animate={{
+    opacity: isSolid ? 1 : 0,
+    y: isSolid ? 0 : -8,
+  }}
+  transition={{ duration: 0.25, ease: "easeOut" }}
+  className={cn(
+    "absolute left-1/2 -translate-x-1/2 flex items-center justify-center",
+    !isSolid && "pointer-events-none"
+  )}
+>
+  <Link
+    href="/"
+    onClick={handleLogoClick}
+    className="flex items-center justify-center py-1 transition-transform hover:scale-105"
+    aria-label="Textiles Reyes — Inicio"
+  >
+    <Image
+      src="/logo.png"
+      alt="Textiles Reyes Logo"
+      width={180}
+      height={50}
+      priority
+      className="h-7 sm:h-9 w-auto object-contain drop-shadow-sm"
+    />
+  </Link>
+</motion.div>
 
           {/* Lado derecho: Búsqueda, Cuenta y Carrito */}
           <div className="flex items-center gap-1 sm:gap-2">

@@ -86,12 +86,13 @@ const iconBtn = cn(
           </div>
 
           {/* Centro: El texto "Textiles Reyes" solo aparece cuando se hace scroll */}
-         <motion.div
+          <motion.div
+  style={{ scale: logoScale }}
   animate={{
     opacity: isSolid ? 1 : 0,
-    y: isSolid ? 0 : -8,
+    y: isSolid ? 0 : -12,
   }}
-  transition={{ duration: 0.25, ease: "easeOut" }}
+  transition={{ duration: 0.35, ease: "easeOut" }}
   className={cn(
     "absolute left-1/2 -translate-x-1/2 flex items-center justify-center",
     !isSolid && "pointer-events-none"
@@ -99,7 +100,6 @@ const iconBtn = cn(
 >
   <Link
     href="/"
-    onClick={handleLogoClick}
     className="flex items-center justify-center py-1 transition-transform hover:scale-105"
     aria-label="Textiles Reyes — Inicio"
   >

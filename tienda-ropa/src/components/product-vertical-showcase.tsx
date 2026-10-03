@@ -42,17 +42,15 @@ export default function ProductVerticalShowcase({
   }
 
   return (
-    /* Contenedor: más ancho (max-w-[640px]), más alto (h-[90vh]) */
-    <div className="relative w-full max-w-[480px] sm:max-w-[580px] lg:max-w-[640px] h-[72vh] sm:h-[82vh] lg:h-[90vh] min-h-[520px] max-h-[950px] flex items-center justify-center overflow-hidden select-none my-auto">
+    <div className="relative w-full h-[85vh] sm:h-[88vh] lg:h-[92vh] flex items-center justify-center overflow-hidden select-none">
       <div className="relative w-full h-full flex items-center justify-center">
         {itemList.map((imgSrc, index) => {
           const offset = getCardOffset(index)
           const isCenter = offset === 0
 
-          // Desplazamiento vertical fluido
-          const translateY = `${offset * 42}%`
-          const scale = isCenter ? 1 : 0.88
-          const opacity = isCenter ? 1 : 0.25
+          const translateY = `${offset * 50}%`
+          const scale = isCenter ? 1 : 0.82
+          const opacity = isCenter ? 1 : 0.2
           const zIndex = isCenter ? 30 : 10
 
           return (
@@ -76,20 +74,15 @@ export default function ProductVerticalShowcase({
               }}
               onClick={() => setActiveIndex(index)}
               style={{ willChange: 'transform, opacity' }}
-              /* 
-                MEJORAS CLAVE PARA CÉLULAR Y TAMAÑO:
-                - touch-none: elimina el lag evitando que el scroll del celular choque con el drag.
-                - transform-gpu: acelera el renderizado usando la tarjeta gráfica del móvil.
-                - w-[92%] / h-[92%]: la tarjeta ocupa casi todo el espacio físico disponible.
-              */
-className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[120%] rounded-3xl overflow-hidden bg-white cursor-grab active:cursor-grabbing"            >
-              <div className="w-full h-full relative">
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-none overflow-hidden bg-white cursor-grab active:cursor-grabbing touch-none transform-gpu flex items-center justify-center"
+            >
+              <div className="w-full h-full relative flex items-center justify-center">
                 <Image
                   src={imgSrc}
                   alt={`Vista ${index + 1}`}
                   fill
                   priority={isCenter}
-                  sizes="(max-width: 640px) 90vw, 600px"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
                   className="object-contain pointer-events-none"
                   unoptimized
                 />
@@ -105,7 +98,7 @@ className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] 
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
-            className={`w-2 rounded-full transition-all duration-300 ${
+            className={`w-2 transition-all duration-300 rounded-none ${
               i === activeIndex
                 ? 'h-6 bg-black'
                 : 'h-2 bg-black/20 hover:bg-black/40'

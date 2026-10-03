@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useCart } from '@/components/cart-provider'
 import type { Product } from '@/lib/products'
 import ProductVerticalShowcase from '@/components/product-vertical-showcase'
+import { MiniProductCarousel } from '@/components/mini-product-carousel'
 
 interface ProductDetailProps {
   product: Product
@@ -33,10 +34,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   return (
     <div className="min-h-screen bg-white text-black py-4 px-4 sm:px-8 lg:px-12 font-sans">
-      {/* w-full sin max-w para expandir a los bordes extremos */}
+      {/* 1. SECCIÓN PRINCIPAL: PRENDA Y BOTÓN DE COMPRA */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-center min-h-[90vh]">
         
-        {/* 1. COLUMNA IZQUIERDA: Pegada al borde izquierdo */}
+        {/* COLUMNA IZQUIERDA */}
         <div className="lg:col-span-3 space-y-6 lg:pt-4">
           <Link
             href="/productos"
@@ -68,14 +69,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </p>
         </div>
 
-        {/* 2. COLUMNA CENTRAL: Imagen Grande */}
+        {/* COLUMNA CENTRAL: IMAGEN PRINCIPAL */}
         <div className="lg:col-span-6 flex items-center justify-center h-full w-full">
           <ProductVerticalShowcase 
             images={images && images.length > 0 ? images : [(product as any)?.image || '/placeholder.svg']} 
           />
         </div>
 
-        {/* 3. COLUMNA DERECHA: Pegada al borde derecho con estilo original redondeado */}
+        {/* COLUMNA DERECHA: SELECCIÓN DE TALLA Y COMPRA */}
         <div className="lg:col-span-3 space-y-5 bg-white p-6 sm:p-7 rounded-3xl border border-black/10 shadow-xl lg:sticky lg:top-8">
           
           {/* PRECIO */}
@@ -181,6 +182,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
       </div>
+
+      {/* 2. CARRUSEL MINIATURA CON EFECTO HUMO (Ubicado justo abajo de la camisa) */}
+      <MiniProductCarousel />
     </div>
   )
 }
